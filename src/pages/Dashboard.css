@@ -1,0 +1,133 @@
+.dashboard-page {
+    width: 100%;
+}
+
+.dashboard-content {
+    padding-top: 0;
+}
+
+.dashboard-header-title {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+}
+
+.dashboard-header-title h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    /* Assuming black header so title might be there? Wait, the screenshot shows it in the black header area actually */
+    /* Screenshot analysis: "Gestão de Veiculos" is in the black header on the right side. 
+       My component structure puts Header separately.
+       Let's adjust. The screenshot has the title inside the black bar. 
+       My previous Header component has fixed content. 
+       I might need to make Header more flexible or just put this title below for now to match the "content" structure */
+    display: none;
+    /* Hiding this local H1 if we update the main Header */
+}
+
+/* Let's style the stats grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Actions bar */
+.actions-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--bg-card);
+    padding: 16px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+    .actions-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.search-wrapper {
+    position: relative;
+    flex-grow: 1;
+    max-width: 500px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.search-wrapper input {
+    width: 100%;
+    padding: 10px 12px 10px 40px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    outline: none;
+    color: var(--text-main);
+}
+
+.search-wrapper input:focus {
+    border-color: var(--primary);
+}
+
+.actions-right {
+    display: flex;
+    gap: 12px;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    color: var(--text-tertiary);
+    outline: none;
+    cursor: pointer;
+}
+
+.new-vehicle-btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.new-vehicle-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
