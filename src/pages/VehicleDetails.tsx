@@ -7,6 +7,7 @@ import {
     FaChevronLeft, FaChevronRight, FaCalendarAlt, FaCogs,
     FaTachometerAlt, FaGasPump, FaPalette, FaBarcode, FaSpinner
 } from 'react-icons/fa';
+import { toast } from 'sonner';
 import './VehicleDetails.css';
 
 export const VehicleDetails: React.FC = () => {
@@ -15,6 +16,15 @@ export const VehicleDetails: React.FC = () => {
     const [vehicle, setVehicle] = useState<Vehicle | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    const [leadFormData, setLeadFormData] = useState({
+        name: '',
+        phone: '',
+        email: '',
+        message: '',
+        simulateFinancing: false
+    });
+    const [sendingLead, setSendingLead] = useState(false);
 
     useEffect(() => {
         const fetchVehicle = async () => {
@@ -31,6 +41,49 @@ export const VehicleDetails: React.FC = () => {
         };
         fetchVehicle();
     }, [id]);
+
+    const handleLeadChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value, type } = e.target;
+        const checked = (e.target as HTMLInputElement).checked;
+
+        setLeadFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleLeadSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!vehicle) return;
+
+        if (!leadFormData.name || !leadFormData.phone) {
+            toast.error('Por favor, preencha nome e telefone.');
+            return;
+        }
+
+        setSendingLead(true);
+        try {
+            await vehicleService.sendLeadToWebhook({
+                ...leadFormData,
+                vehicleName: `${vehicle.make} ${vehicle.model} ${vehicle.version}`.trim()
+            });
+
+            toast.success('Mensagem enviada com sucesso!');
+            setLeadFormData({
+                name: '',
+                phone: '',
+                email: '',
+                message: '',
+                simulateFinancing: false
+            });
+        } catch (error) {
+            console.error('Error sending lead:', error);
+            toast.error('Erro ao enviar mensagem. Tente novamente mais tarde.');
+        } finally {
+            setSendingLead(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -66,7 +119,6 @@ export const VehicleDetails: React.FC = () => {
         setCurrentSlide((prev) => prev - 1);
     };
 
-    // Helper to render visible slides for infinite effect
     const renderSlides = () => {
         if (!vehicle?.images || vehicle.images.length === 0) {
             return (
@@ -77,15 +129,12 @@ export const VehicleDetails: React.FC = () => {
         }
 
         const slides = [];
-        // Determine window of slides to render. 
-        // We show 3 images. Let's render from current-2 to current+5 to ensure smooth transition buffer.
         const buffer = 2;
         const visibleCount = 3;
         const start = currentSlide - buffer;
         const end = currentSlide + visibleCount + buffer;
 
         for (let i = start; i <= end; i++) {
-            // Modulo logic to loop correctly
             const imgIndex = ((i % vehicle.images.length) + vehicle.images.length) % vehicle.images.length;
             const img = vehicle.images[imgIndex];
 
@@ -108,7 +157,6 @@ export const VehicleDetails: React.FC = () => {
         <div className="vehicle-details-page">
             <Header />
 
-            {/* Gallery / Hero */}
             <div className="vehicle-gallery-container">
                 <button className="gallery-nav-btn gallery-prev" onClick={prevSlide}><FaChevronLeft /></button>
 
@@ -125,7 +173,6 @@ export const VehicleDetails: React.FC = () => {
             </div>
 
             <main className="container">
-                {/* Breadcrumb & Title */}
                 <div className="vehicle-header-section">
                     <div className="breadcrumb">
                         Home <span>&gt;</span> Comprar <span>&gt;</span> {vehicle.make} <span>&gt;</span> {vehicle.yearModel.split('/')[0]}
@@ -146,9 +193,7 @@ export const VehicleDetails: React.FC = () => {
                 </div>
 
                 <div className="details-container">
-                    {/* Left Column: Specs & Options */}
                     <div className="details-left">
-                        {/* Icons Grid */}
                         <div className="specs-grid">
                             <div className="spec-item">
                                 <FaCalendarAlt className="spec-icon" />
@@ -176,7 +221,6 @@ export const VehicleDetails: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Options */}
                         <div className="options-box">
                             <h3 className="section-title">Opcionais</h3>
                             <div className="options-list">
@@ -190,45 +234,78 @@ export const VehicleDetails: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Observations */}
                         <div className="observations-box">
                             <h3 className="section-title">Observações</h3>
                             <p>{vehicle.description || 'Nenhuma observação adicional.'}</p>
                         </div>
                     </div>
 
-                    {/* Right Column: Price & Form */}
                     <div className="details-right">
                         <div className="price-box">
                             <span className="vehicle-price-large">
                                 R$ {vehicle.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </span>
 
-                            <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
-                                <input type="text" placeholder="Nome" className="contact-input" />
-                                <input type="tel" placeholder="Celular" className="contact-input" />
-                                <input type="email" placeholder="E-mail" className="contact-input" />
-                                <textarea placeholder="Digite a sua mensagem" className="contact-textarea"></textarea>
+                            <form className="contact-form" onSubmit={handleLeadSubmit}>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Nome"
+                                    className="contact-input"
+                                    value={leadFormData.name}
+                                    onChange={handleLeadChange}
+                                    required
+                                />
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    placeholder="Celular"
+                                    className="contact-input"
+                                    value={leadFormData.phone}
+                                    onChange={handleLeadChange}
+                                    required
+                                />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="E-mail"
+                                    className="contact-input"
+                                    value={leadFormData.email}
+                                    onChange={handleLeadChange}
+                                />
+                                <textarea
+                                    name="message"
+                                    placeholder="Digite a sua mensagem"
+                                    className="contact-textarea"
+                                    value={leadFormData.message}
+                                    onChange={handleLeadChange}
+                                ></textarea>
 
                                 <div className="form-checks">
                                     <label className="check-label">
-                                        <input type="checkbox" className="check-input" />
-                                        Solicitar cotação de seguro
-                                    </label>
-                                    <label className="check-label">
-                                        <input type="checkbox" className="check-input" />
+                                        <input
+                                            type="checkbox"
+                                            name="simulateFinancing"
+                                            className="check-input"
+                                            checked={leadFormData.simulateFinancing}
+                                            onChange={handleLeadChange}
+                                        />
                                         Simular financiamento online
                                     </label>
                                 </div>
 
-                                <button type="submit" className="submit-btn" onClick={() => alert('Mensagem enviada com sucesso!')}>
-                                    QUERO VER O CARRO
+                                <button
+                                    type="submit"
+                                    className="submit-btn"
+                                    disabled={sendingLead}
+                                >
+                                    {sendingLead ? 'Enviando...' : 'QUERO VER O CARRO'}
                                 </button>
                             </form>
 
                             <div className="store-info">
-                                <p className="store-name">Unidade Morumbi</p>
-                                <p>Dúvidas? Ligue para (11) 5629-2000</p>
+                                <p className="store-name">Unidade Marília - SP</p>
+                                <p>Dúvidas? Ligue para (14) 99705-0679</p>
                                 <p style={{ fontSize: '0.7em', marginTop: '10px', color: '#999' }}>
                                     Ao clicar em Enviar você aceita nossos termos e condições.
                                 </p>

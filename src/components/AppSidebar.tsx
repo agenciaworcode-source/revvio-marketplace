@@ -3,6 +3,7 @@ import { Users, LogOut, LayoutDashboard, Eye } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from '../lib/supabase';
+import { NotificationBell } from './NotificationBell';
 
 export const AppSidebar: React.FC = () => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const AppSidebar: React.FC = () => {
 
     return (
         <aside className="w-64 min-h-screen bg-slate-950 text-slate-50 flex flex-col border-r border-slate-800">
-            <div className="p-6">
+            <div className="p-6 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <img src="/assets/logo-icon.png" alt="Logo" className="h-8 w-auto" />
                     <div className="flex items-center font-bold text-2xl tracking-tighter">
@@ -22,6 +23,7 @@ export const AppSidebar: React.FC = () => {
                         <span className="text-emerald-500">VIO</span>
                     </div>
                 </div>
+                <NotificationBell />
             </div>
 
             <nav className="flex-1 px-4 space-y-2 mt-4">

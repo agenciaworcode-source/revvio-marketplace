@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FaFilter } from 'react-icons/fa';
-import { useVehicles } from '../context/VehicleContext';
+import { carBrands } from '../data';
 import './SidebarFilters.css';
 
 export interface FilterState {
@@ -22,14 +22,7 @@ interface SidebarFiltersProps {
 }
 
 export const SidebarFilters: React.FC<SidebarFiltersProps> = ({ filters, setFilters, onClear }) => {
-    const { vehicles } = useVehicles();
-    const [availableMakes, setAvailableMakes] = useState<string[]>([]);
-
-    useEffect(() => {
-        // Extract unique makes from vehicles
-        const makes = Array.from(new Set(vehicles.map(v => v.make))).sort();
-        setAvailableMakes(makes);
-    }, [vehicles]);
+    const availableMakes = carBrands.sort();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;

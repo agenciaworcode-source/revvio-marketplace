@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useVehicles } from '../context/VehicleContext';
-import { defaultOptions, type Vehicle } from '../data';
+import { defaultOptions, type Vehicle, carBrands } from '../data';
 import { vehicleService } from '../services/vehicleService';
 import { FaArrowLeft, FaCar, FaUser, FaSave, FaList } from 'react-icons/fa';
 import './VehicleEdit.css';
@@ -33,12 +33,13 @@ const emptyVehicle: Omit<Vehicle, 'id'> = {
 export const VehicleEdit: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { getVehicle, addVehicle, updateVehicle } = useVehicles();
+    const { getVehicle, addVehicle, updateVehicle, owners } = useVehicles();
     const isEdit = Boolean(id);
 
     const [formData, setFormData] = useState<Partial<Vehicle>>(emptyVehicle);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [uploading, setUploading] = useState(false);
+    const [ownerSelectionType, setOwnerSelectionType] = useState<'new' | 'existing'>('new');
 
     useEffect(() => {
         if (id) {
@@ -76,6 +77,20 @@ export const VehicleEdit: React.FC = () => {
                 [name]: value
             }
         }));
+    };
+
+    const handleSelectExistingOwner = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedOwner = owners.find(o => `${o.name}-${o.phone}` === e.target.value);
+        if (selectedOwner) {
+            setFormData((prev: Partial<Vehicle>) => ({
+                ...prev,
+                owner: {
+                    name: selectedOwner.name,
+                    phone: selectedOwner.phone,
+                    email: selectedOwner.email
+                }
+            }));
+        }
     };
 
     const handleOptionChange = (option: string) => {
@@ -172,7 +187,17 @@ export const VehicleEdit: React.FC = () => {
                     <div className="form-grid">
                         <div className="form-group">
                             <label>Marca</label>
-                            <input name="make" value={formData.make || ''} onChange={handleChange} placeholder="Ex: VOLKSWAGEN" required />
+                            <select
+                                name="make"
+                                value={formData.make || ''}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Selecione a Marca</option>
+                                {carBrands.sort().map(brand => (
+                                    <option key={brand} value={brand}>{brand}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="form-group">
                             <label>Modelo</label>
@@ -305,6 +330,42 @@ export const VehicleEdit: React.FC = () => {
                         <FaUser />
                         <span>Dados do Proprietário (Revenda)</span>
                     </div>
+
+                    <div className="owner-selection-options" style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
+                        <label className={`selection-type-btn ${ownerSelectionType === 'new' ? 'active' : ''}`} style={{
+                            flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #333', background: ownerSelectionType === 'new' ? '#2ABB9B' : '#1a1a1a',
+                            color: ownerSelectionType === 'new' ? '#fff' : '#666', textAlign: 'center', cursor: 'pointer', fontWeight: 'semibold'
+                        }}>
+                            <input type="radio" value="new" checked={ownerSelectionType === 'new'} onChange={() => setOwnerSelectionType('new')} style={{ display: 'none' }} />
+                            Novo Proprietário
+                        </label>
+                        <label className={`selection-type-btn ${ownerSelectionType === 'existing' ? 'active' : ''}`} style={{
+                            flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #333', background: ownerSelectionType === 'existing' ? '#2ABB9B' : '#1a1a1a',
+                            color: ownerSelectionType === 'existing' ? '#fff' : '#666', textAlign: 'center', cursor: 'pointer', fontWeight: 'semibold'
+                        }}>
+                            <input type="radio" value="existing" checked={ownerSelectionType === 'existing'} onChange={() => setOwnerSelectionType('existing')} style={{ display: 'none' }} />
+                            Proprietário Existente
+                        </label>
+                    </div>
+
+                    {ownerSelectionType === 'existing' && (
+                        <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                            <label>Selecionar Proprietário Cadastrado</label>
+                            <select
+                                onChange={handleSelectExistingOwner}
+                                value={`${formData.owner?.name}-${formData.owner?.phone}`}
+                                style={{ width: '100%', padding: '12px', background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', color: '#fff' }}
+                            >
+                                <option value="">Escolha um proprietário...</option>
+                                {owners.map(owner => (
+                                    <option key={`${owner.name}-${owner.phone}`} value={`${owner.name}-${owner.phone}`}>
+                                        {owner.name} ({owner.phone})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
                     <div className="form-grid">
                         <div className="form-group">
                             <label>Nome Completo</label>
@@ -313,6 +374,7 @@ export const VehicleEdit: React.FC = () => {
                                 value={formData.owner?.name || ''}
                                 onChange={handleOwnerChange}
                                 placeholder="Nome do proprietário anterior"
+                                readOnly={ownerSelectionType === 'existing'}
                             />
                         </div>
                         <div className="form-group">
@@ -322,9 +384,10 @@ export const VehicleEdit: React.FC = () => {
                                 value={formData.owner?.phone || ''}
                                 onChange={handleOwnerChange}
                                 placeholder="(11) 99999-9999"
+                                readOnly={ownerSelectionType === 'existing'}
                             />
                         </div>
-                        <div className="form-group">
+                        <div className="form-group" style={{ gridColumn: ownerSelectionType === 'existing' ? 'span 2' : 'auto' }}>
                             <label>Email</label>
                             <input
                                 type="email"
@@ -332,6 +395,7 @@ export const VehicleEdit: React.FC = () => {
                                 value={formData.owner?.email || ''}
                                 onChange={handleOwnerChange}
                                 placeholder="email@exemplo.com"
+                                readOnly={ownerSelectionType === 'existing'}
                             />
                         </div>
                     </div>

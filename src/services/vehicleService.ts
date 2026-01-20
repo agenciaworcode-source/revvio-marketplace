@@ -153,5 +153,58 @@ export const vehicleService = {
 
         if (error) throw error;
         return mapToVehicle(data);
+    },
+
+    async sendLeadToWebhook(leadData: {
+        name: string;
+        phone: string;
+        email: string;
+        message: string;
+        vehicleName: string;
+        simulateFinancing: boolean;
+    }) {
+        const WEBHOOK_URL = 'https://n8n.agenciaworcode.com.br/webhook/revvio-saas';
+
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...leadData,
+                timestamp: new Date().toISOString(),
+                source: 'Vehicle Details Page'
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Falha ao enviar lead para o servidor');
+        }
+
+        return true;
+    },
+
+    async batchUpdateOwner(ownerName: string, ownerPhone: string, newOwnerData: { name: string, phone: string, email: string }) {
+        const { error } = await supabase
+            .from('vehicles')
+            .update({
+                owner_name: newOwnerData.name,
+                owner_phone: newOwnerData.phone,
+                owner_email: newOwnerData.email
+            })
+            .eq('owner_name', ownerName)
+            .eq('owner_phone', ownerPhone);
+
+        if (error) throw error;
+    },
+
+    async batchDeleteByOwner(ownerName: string, ownerPhone: string) {
+        const { error } = await supabase
+            .from('vehicles')
+            .delete()
+            .eq('owner_name', ownerName)
+            .eq('owner_phone', ownerPhone);
+
+        if (error) throw error;
     }
 };

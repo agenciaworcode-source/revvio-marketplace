@@ -29,5 +29,8 @@ export const defaultOptions = [
   'Travas Elétricas', 'Vidros Elétricos', 'Alarme', 'Som',
   'Sensor de Ré', 'Rodas de Liga Leve'
 ];
-
-
+export const carBrands = [
+  'Audi', 'BMW', 'Chery', 'Chevrolet', 'Citroën', 'Fiat', 'Ford', 'Honda',
+  'Hyundai', 'Jeep', 'Kia', 'Land Rover', 'Mercedes-Benz', 'Mitsubishi',
+  'Nissan', 'Peugeot', 'Porsche', 'Renault', 'Toyota', 'Volkswagen', 'Volvo'
+];

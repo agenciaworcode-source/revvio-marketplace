@@ -15,8 +15,7 @@ import {
     TrendingUp,
     Clock,
     CheckCircle2,
-    XCircle,
-    ExternalLink
+    XCircle
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -228,15 +227,6 @@ export const Dashboard: React.FC = () => {
                                         >
                                             <CheckCircle2 className="w-3 h-3" />
                                             Aprovar
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="px-2"
-                                            title="Ver na loja"
-                                            onClick={() => window.open(`/vehicle/${vehicle.id}`, '_blank')}
-                                        >
-                                            <ExternalLink className="w-3 h-3" />
                                         </Button>
                                         <Button
                                             variant="outline"

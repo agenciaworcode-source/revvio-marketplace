@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { type Vehicle, defaultOptions } from '../../data';
+import { type Vehicle, defaultOptions, carBrands } from '../../data';
 import { FaTimes } from 'react-icons/fa';
 import './VehicleModal.css';
 
@@ -204,13 +204,17 @@ export const VehicleModal: React.FC<VehicleModalProps> = ({
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Marca</label>
-                                <input
+                                <select
                                     name="make"
                                     value={formData.make || ''}
                                     onChange={handleChange}
-                                    placeholder="Ex: VOLKSWAGEN"
                                     required
-                                />
+                                >
+                                    <option value="">Selecione a Marca</option>
+                                    {carBrands.sort().map(brand => (
+                                        <option key={brand} value={brand}>{brand}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="form-group">
                                 <label>Modelo</label>

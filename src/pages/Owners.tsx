@@ -5,16 +5,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Users,
     Phone,
     Mail,
     Car,
     Eye,
-    TrendingUp
+    TrendingUp,
+    Edit,
+    Trash2,
+    Save,
+    X
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
 
 interface OwnerGroup {
     id: string;
@@ -25,8 +32,14 @@ interface OwnerGroup {
 }
 
 export const Owners: React.FC = () => {
-    const { vehicles, loading } = useVehicles();
+    const { vehicles, loading, updateOwner, deleteOwner } = useVehicles();
     const [selectedOwner, setSelectedOwner] = useState<OwnerGroup | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        name: '',
+        phone: '',
+        email: ''
+    });
 
     const owners = useMemo(() => {
         const ownerMap = new Map<string, OwnerGroup>();
@@ -56,6 +69,43 @@ export const Owners: React.FC = () => {
         totalOwners: owners.length,
         totalLinkedVehicles: owners.reduce((acc, curr) => acc + curr.vehicles.length, 0),
         avgVehiclesPerOwner: owners.length ? (owners.reduce((acc, curr) => acc + curr.vehicles.length, 0) / owners.length).toFixed(1) : 0
+    };
+
+    const handleEditClick = (owner: OwnerGroup) => {
+        setEditFormData({
+            name: owner.name,
+            phone: owner.phone,
+            email: owner.email === 'N/A' ? '' : owner.email
+        });
+        setSelectedOwner(owner);
+        setIsEditing(true);
+    };
+
+    const handleDeleteClick = async (owner: OwnerGroup) => {
+        if (window.confirm(`Tem certeza que deseja excluir o proprietário "${owner.name}"? Isso também excluirá todos os ${owner.vehicles.length} veículos vinculados a ele.`)) {
+            try {
+                await deleteOwner(owner.name, owner.phone);
+            } catch (error) {
+                // Error handled in context
+            }
+        }
+    };
+
+    const handleSaveEdit = async () => {
+        if (!selectedOwner) return;
+
+        if (!editFormData.name || !editFormData.phone) {
+            toast.error('Nome e telefone são obrigatórios.');
+            return;
+        }
+
+        try {
+            await updateOwner(selectedOwner.name, selectedOwner.phone, editFormData);
+            setIsEditing(false);
+            setSelectedOwner(null);
+        } catch (error) {
+            // Error handled in context
+        }
     };
 
     if (loading) {
@@ -151,19 +201,41 @@ export const Owners: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-right hidden sm:block">
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-right hidden lg:block mr-4">
                                             <div className="text-sm font-medium">{owner.vehicles.length} veículo(s)</div>
                                             <div className="text-xs text-muted-foreground">vinculado(s)</div>
                                         </div>
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => setSelectedOwner(owner)}
+                                            onClick={() => {
+                                                setSelectedOwner(owner);
+                                                setIsEditing(false);
+                                            }}
                                             className="gap-2"
+                                            title="Ver Detalhes"
                                         >
                                             <Eye className="w-4 h-4" />
                                             <span className="hidden sm:inline">Detalhes</span>
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleEditClick(owner)}
+                                            className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                            title="Editar"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleDeleteClick(owner)}
+                                            className="gap-2 text-destructive hover:text-destructive hover:bg-red-50"
+                                            title="Excluir"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
                                         </Button>
                                     </div>
                                 </div>
@@ -173,13 +245,22 @@ export const Owners: React.FC = () => {
                 </CardContent>
             </Card>
 
-            {/* Owner Details Dialog */}
-            <Dialog open={!!selectedOwner} onOpenChange={() => setSelectedOwner(null)}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            {/* Owner Details or Edit Dialog */}
+            <Dialog open={!!selectedOwner} onOpenChange={() => {
+                setSelectedOwner(null);
+                setIsEditing(false);
+            }}>
+                <DialogContent className={cn(
+                    "max-h-[90vh] overflow-y-auto",
+                    !isEditing ? "max-w-4xl" : "max-w-md"
+                )}>
                     <DialogHeader>
-                        <DialogTitle>Detalhes do Proprietário</DialogTitle>
+                        <DialogTitle>
+                            {isEditing ? 'Editar Proprietário' : 'Detalhes do Proprietário'}
+                        </DialogTitle>
                     </DialogHeader>
-                    {selectedOwner && (
+
+                    {selectedOwner && !isEditing && (
                         <div className="space-y-6">
                             {/* Owner Profile */}
                             <div className="flex items-center gap-4 p-4 bg-accent/50 rounded-lg">
@@ -202,6 +283,12 @@ export const Owners: React.FC = () => {
                                             </span>
                                         )}
                                     </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" onClick={() => handleEditClick(selectedOwner)}>
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Editar
+                                    </Button>
                                 </div>
                             </div>
 
@@ -254,6 +341,49 @@ export const Owners: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
+                        </div>
+                    )}
+
+                    {selectedOwner && isEditing && (
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Nome Completo</Label>
+                                <Input
+                                    id="name"
+                                    value={editFormData.name}
+                                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                                    placeholder="Ex: João Silva"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="phone">Telefone / WhatsApp</Label>
+                                <Input
+                                    id="phone"
+                                    value={editFormData.phone}
+                                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                                    placeholder="(11) 99999-9999"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email">E-mail (Opcional)</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={editFormData.email}
+                                    onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                                    placeholder="joao@exemplo.com"
+                                />
+                            </div>
+                            <DialogFooter className="pt-4">
+                                <Button variant="outline" onClick={() => setIsEditing(false)} className="gap-2">
+                                    <X className="w-4 h-4" />
+                                    Cancelar
+                                </Button>
+                                <Button onClick={handleSaveEdit} className="gap-2">
+                                    <Save className="w-4 h-4" />
+                                    Salvar Alterações
+                                </Button>
+                            </DialogFooter>
                         </div>
                     )}
                 </DialogContent>
