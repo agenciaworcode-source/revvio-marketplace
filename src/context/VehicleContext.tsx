@@ -60,8 +60,6 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
                     table: 'vehicles'
                 },
                 (payload) => {
-                    console.log('Real-time event received:', payload);
-
                     if (payload.eventType === 'INSERT') {
                         const newVehicle = payload.new as any;
                         const isDashboard = window.location.pathname.startsWith('/dashboard');
@@ -91,9 +89,7 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
                     refreshVehicles();
                 }
             )
-            .subscribe((status) => {
-                console.log('Real-time subscription status:', status);
-            });
+            .subscribe();
 
         return () => {
             supabase.removeChannel(subscription);
