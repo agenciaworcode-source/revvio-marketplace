@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { type Vehicle } from '../data';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export const vehicleService = {
     async getAll(): Promise<Vehicle[]> {

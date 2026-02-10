@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useVehicles } from '../context/VehicleContext';
-import { MessageSquare, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export const WhatsAppGenerator: React.FC = () => {
     const { vehicles } = useVehicles();
     const [selectedVehicleId, setSelectedVehicleId] = useState<string>('');
     const [template, setTemplate] = useState('');
     const [copied, setCopied] = useState(false);
-    const [fipeValue, setFipeValue] = useState<string>('');
 
     const selectedVehicle = vehicles.find(v => v.id.toString() === selectedVehicleId);
 
@@ -57,7 +56,6 @@ export const WhatsAppGenerator: React.FC = () => {
     useEffect(() => {
         if (!selectedVehicle) {
             setTemplate('');
-            setFipeValue('');
             return;
         }
 
