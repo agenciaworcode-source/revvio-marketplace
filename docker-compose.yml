@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "80" # Expose internal container port 80 to Coolify proxy
 
   backend:
     build:
@@ -13,7 +13,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "3001" # Expose internal container port 3001 to Coolify proxy
     environment:
       - NODE_ENV=production
-      # Add other environment variables as needed, Coolify can inject them
+      # Add other backend environment variables in Coolify dashboard
