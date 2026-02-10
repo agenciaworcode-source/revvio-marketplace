@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 # Local env files
+contexto/
 .env
 backend/.env
 revvio_build.zip

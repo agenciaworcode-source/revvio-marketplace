@@ -22,6 +22,21 @@ export interface Vehicle {
     phone: string;
     email?: string;
   };
+  // Campos de Procedência
+  belowFipe?: boolean;
+  originType?: 'nacional' | 'importado';
+  originCountry?: string;
+  firstOwner?: boolean;
+  fromAuction?: boolean;
+  auctionDetails?: string;
+  accidentHistory?: boolean;
+  accidentDetails?: string;
+  documentationStatus?: 'regular' | 'pendente' | 'irregular';
+  documentationNotes?: string;
+  ipvaPaid?: boolean;
+  ipvaYear?: number;
+  warranty?: boolean;
+  warrantyDetails?: string;
 }
 
 export const defaultOptions = [

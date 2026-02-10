@@ -21,7 +21,22 @@ export const mapToVehicle = (row: any) => ({
         name: row.owner_name,
         phone: row.owner_phone,
         email: row.owner_email
-    } : undefined
+    } : undefined,
+    // Campos de Procedência
+    belowFipe: row.below_fipe,
+    originType: row.origin_type,
+    originCountry: row.origin_country,
+    firstOwner: row.first_owner,
+    fromAuction: row.from_auction,
+    auctionDetails: row.auction_details,
+    accidentHistory: row.accident_history,
+    accidentDetails: row.accident_details,
+    documentationStatus: row.documentation_status,
+    documentationNotes: row.documentation_notes,
+    ipvaPaid: row.ipva_paid,
+    ipvaYear: row.ipva_year,
+    warranty: row.warranty,
+    warrantyDetails: row.warranty_details
 });
 
 export const mapToRow = (vehicle: any) => {
@@ -50,6 +65,22 @@ export const mapToRow = (vehicle: any) => {
         row.owner_phone = vehicle.owner.phone;
         row.owner_email = vehicle.owner.email;
     }
+
+    // Campos de Procedência
+    if (vehicle.belowFipe !== undefined) row.below_fipe = vehicle.belowFipe;
+    if (vehicle.originType) row.origin_type = vehicle.originType;
+    if (vehicle.originCountry) row.origin_country = vehicle.originCountry;
+    if (vehicle.firstOwner !== undefined) row.first_owner = vehicle.firstOwner;
+    if (vehicle.fromAuction !== undefined) row.from_auction = vehicle.fromAuction;
+    if (vehicle.auctionDetails) row.auction_details = vehicle.auctionDetails;
+    if (vehicle.accidentHistory !== undefined) row.accident_history = vehicle.accidentHistory;
+    if (vehicle.accidentDetails) row.accident_details = vehicle.accidentDetails;
+    if (vehicle.documentationStatus) row.documentation_status = vehicle.documentationStatus;
+    if (vehicle.documentationNotes) row.documentation_notes = vehicle.documentationNotes;
+    if (vehicle.ipvaPaid !== undefined) row.ipva_paid = vehicle.ipvaPaid;
+    if (vehicle.ipvaYear) row.ipva_year = vehicle.ipvaYear;
+    if (vehicle.warranty !== undefined) row.warranty = vehicle.warranty;
+    if (vehicle.warrantyDetails) row.warranty_details = vehicle.warrantyDetails;
 
     // Remove undefined keys
     Object.keys(row).forEach(key => row[key] === undefined && delete row[key]);

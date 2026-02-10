@@ -1,5 +1,5 @@
 import { useNavigate, NavLink } from 'react-router-dom';
-import { Users, LogOut, LayoutDashboard, Eye } from 'lucide-react';
+import { Users, LogOut, LayoutDashboard, Eye, UserPlus, MessageSquare } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from '../lib/supabase';
@@ -44,6 +44,19 @@ export const AppSidebar: React.FC = () => {
                 </NavLink>
 
                 <NavLink
+                    to="/dashboard/leads"
+                    className={({ isActive }) => cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors",
+                        isActive
+                            ? "bg-slate-800 text-white shadow-sm ring-1 ring-slate-700"
+                            : "text-slate-400 hover:text-white hover:bg-slate-900"
+                    )}
+                >
+                    <UserPlus className="w-5 h-5" />
+                    Leads
+                </NavLink>
+
+                <NavLink
                     to="/dashboard/owners"
                     className={({ isActive }) => cn(
                         "flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors",
@@ -54,6 +67,19 @@ export const AppSidebar: React.FC = () => {
                 >
                     <Users className="w-5 h-5" />
                     Proprietários
+                </NavLink>
+
+                <NavLink
+                    to="/dashboard/whatsapp-generator"
+                    className={({ isActive }) => cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors",
+                        isActive
+                            ? "bg-slate-800 text-white shadow-sm ring-1 ring-slate-700"
+                            : "text-slate-400 hover:text-white hover:bg-slate-900"
+                    )}
+                >
+                    <MessageSquare className="w-5 h-5" />
+                    Gerador WhatsApp
                 </NavLink>
 
                 <NavLink

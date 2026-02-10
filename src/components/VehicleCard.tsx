@@ -3,7 +3,7 @@ import type { Vehicle } from '../data';
 import { FaRegClock, FaRegCalendarAlt } from 'react-icons/fa';
 import { BsShieldShaded } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
-import './VehicleCard.css';
+
 
 interface VehicleCardProps {
     vehicle: Vehicle;
@@ -21,40 +21,47 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
     };
 
     return (
-        <div className="vehicle-card" onClick={() => navigate(`/vehicle/${vehicle.id}`)} style={{ cursor: 'pointer' }}>
-            <div className="card-image-wrapper">
-                <img src={vehicle.images?.[0] || 'https://via.placeholder.com/300'} alt={`${vehicle.make} ${vehicle.model}`} className="card-image" />
+        <div 
+            className="bg-white rounded-[6px] shadow-sm transition-all duration-200 flex flex-col group hover:-translate-y-1 hover:shadow-md cursor-pointer hover:rounded-lg hover:border-emerald-500 hover:border" 
+            onClick={() => navigate(`/vehicle/${vehicle.id}`)}
+        >
+            <div className="relative aspect-video w-full overflow-hidden bg-gray-100 rounded-t-[10px]">
+                <img 
+                    src={vehicle.images?.[0] || 'https://via.placeholder.com/300'} 
+                    alt={`${vehicle.make} ${vehicle.model}`} 
+                    className="w-full h-full object-cover transition-transform duration-[800ms] group-hover:scale-105" 
+                />
                 {vehicle.isArmored && (
-                    <div className="armored-badge">
+                    <div className="absolute bottom-0 left-0 right-0 bg-[#E74C3C] text-white flex justify-center items-center gap-2 p-2 text-sm font-semibold uppercase">
                         <BsShieldShaded />
                         <span>Blindado</span>
                     </div>
                 )}
             </div>
 
-            <div className="card-content">
-                <div className="card-header">
-                    <h3 className="vehicle-make">{vehicle.make}</h3>
-                    <p className="vehicle-model">{vehicle.model}</p>
+            <div className="p-4 flex flex-col flex-grow">
+                <div className="mb-4">
+                    <h3 className="text-sm font-extrabold text-[#333] uppercase mb-1">{vehicle.make}</h3>
+                    <p className="text-sm font-bold text-[#2ABB9B] uppercase leading-tight">{vehicle.model}</p>
                 </div>
 
-                <div className="vehicle-specs">
-                    <div className="spec-item">
-                        <FaRegClock className="spec-icon" />
+                <div className="flex justify-between mb-4 text-[#888] text-[13px]">
+                    <div className="flex items-center gap-1.5">
+                        <FaRegClock className="text-[#888]" />
                         <span>{formatMileage(vehicle.mileage)}</span>
                     </div>
-                    <div className="spec-item">
-                        <FaRegCalendarAlt className="spec-icon" />
+                    <div className="flex items-center gap-1.5">
+                        <FaRegCalendarAlt className="text-[#888]" />
                         <span>{vehicle.yearModel}</span>
                     </div>
                 </div>
 
-                <div className="price-section">
+                <div className="mt-auto">
                     {vehicle.oldPrice && (
-                        <p className="old-price">DE R$ {formatPrice(vehicle.oldPrice)}</p>
+                        <p className="text-xs line-through text-[#888] mb-1">DE R$ {formatPrice(vehicle.oldPrice)}</p>
                     )}
-                    <p className="current-price">
-                        {vehicle.oldPrice && <span className="por-label">POR </span>}
+                    <p className="text-xl font-extrabold text-[#2ABB9B]">
+                        {vehicle.oldPrice && <span className="text-sm font-semibold">POR </span>}
                         R$ {formatPrice(vehicle.price)}
                     </p>
                 </div>

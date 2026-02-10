@@ -7,6 +7,7 @@ import { supabase } from './config/supabase.js';
 import vehicleRoutes from './routes/vehicleRoutes.js';
 import ownerRoutes from './routes/ownerRoutes.js';
 import leadRoutes from './routes/leadRoutes.js';
+import fipeRoutes from './routes/fipeRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/owners', ownerRoutes);
 app.use('/api/leads', leadRoutes);
+app.use('/api/fipe', fipeRoutes);
 
 // Health check
 app.get('/health', async (req, res) => {

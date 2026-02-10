@@ -15,7 +15,8 @@ import {
     TrendingUp,
     Clock,
     CheckCircle2,
-    XCircle
+    XCircle,
+    Download
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -57,6 +58,31 @@ export const Dashboard: React.FC = () => {
         navigate('/dashboard/vehicle/new');
     };
 
+    const handleExportCSV = () => {
+        const headers = ['Marca', 'Modelo', 'Versão', 'Ano', 'Preço', 'KM', 'Status'];
+        const csvContent = [
+            headers.join(';'),
+            ...filteredVehicles.map(v => [
+                `"${(v.make || '').replace(/"/g, '""')}"`,
+                `"${(v.model || '').replace(/"/g, '""')}"`,
+                `"${(v.version || '').replace(/"/g, '""')}"`,
+                `"${v.yearModel}"`,
+                `"${v.price}"`,
+                `"${v.mileage}"`,
+                `"${v.status}"`
+            ].join(';'))
+        ].join('\n');
+
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `veiculos_export_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -73,10 +99,16 @@ export const Dashboard: React.FC = () => {
                     <h1 className="text-3xl font-bold tracking-tight">Gestão de Veículos</h1>
                     <p className="text-muted-foreground mt-1">Gerencie seu inventário de veículos</p>
                 </div>
-                <Button onClick={handleCreate} className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    Novo Veículo
-                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleExportCSV} variant="outline" className="gap-2">
+                        <Download className="w-4 h-4" />
+                        Exportar CSV
+                    </Button>
+                    <Button onClick={handleCreate} className="gap-2">
+                        <Plus className="w-4 h-4" />
+                        Novo Veículo
+                    </Button>
+                </div>
             </div>
 
             {/* Stats Cards */}
