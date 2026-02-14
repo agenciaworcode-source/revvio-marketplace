@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useVehicles } from '../context/VehicleContext';
 import { defaultOptions, type Vehicle, carBrands } from '../data';
-import { Wrench } from 'lucide-react';
 import { vehicleService } from '../services/vehicleService';
 import { useFipe } from '../hooks/useFipe';
 
