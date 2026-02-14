@@ -14,10 +14,17 @@ export const ConfirmEmail: React.FC = () => {
                 
                 <h1 className="text-2xl font-bold text-slate-900 mb-2">Confirme seu Email</h1>
                 
-                <p className="text-slate-600 mb-8">
-                    Cadastro realizado com sucesso! Enviamos um link de confirmação para o seu email. 
-                    Por favor, verifique sua caixa de entrada (e spam) para ativar sua conta.
+                <p className="text-slate-600 mb-6">
+                    Cadastro realizado com sucesso! Enviamos um link de confirmação para o seu email.
                 </p>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8 text-left">
+                    <p className="text-sm text-amber-800 font-medium flex items-start gap-2">
+                        <span className="text-lg">⚠️</span>
+                        <span>
+                            **Atenção:** Se não encontrar o email na Caixa de Entrada, verifique sua pasta de **SPAM** ou **Lixo Eletrônico**.
+                        </span>
+                    </p>
+                </div>
 
                 <div className="space-y-4">
                     <Link 

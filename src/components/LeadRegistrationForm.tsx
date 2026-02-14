@@ -41,6 +41,7 @@ export const LeadRegistrationForm: React.FC = () => {
                     email: formData.email,
                     password: formData.senha,
                     options: {
+                        emailRedirectTo: `${window.location.origin}/dashboard`,
                         data: {
                             nome: formData.nome,
                             contato: formData.contato,

@@ -7,6 +7,7 @@ export interface Vehicle {
   mileage: number;
   price: number;
   oldPrice?: number;
+  fipePrice?: number;
   isArmored: boolean; // boolean for "Blindado"
   images: string[];
   location?: string;
@@ -37,6 +38,13 @@ export interface Vehicle {
   ipvaYear?: number;
   warranty?: boolean;
   warrantyDetails?: string;
+  // Campos de Manutenção / Estado
+  tires?: string;
+  keys?: string;
+  engine?: string;
+  transmissionState?: string;
+  suspension?: string;
+  airConditioning?: string;
 }
 
 export const defaultOptions = [

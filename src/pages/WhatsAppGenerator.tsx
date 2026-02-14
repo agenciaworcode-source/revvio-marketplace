@@ -105,14 +105,14 @@ export const WhatsAppGenerator: React.FC = () => {
 🕧 KM: ${selectedVehicle.mileage.toLocaleString('pt-BR')}
 ⛽ COMBUSTIVEL: ${selectedVehicle.fuel || 'FLEX'}
 🕹️ CÂMBIO: ${selectedVehicle.transmission || 'MANUAL'}   
-🛞 PNEUS: 
-✅ CHAVE: 
+🛞 PNEUS: ${selectedVehicle.tires || ''}
+✅ CHAVE: ${selectedVehicle.keys || ''}
 ✅ IPVA ${new Date().getFullYear()}: ${selectedVehicle.ipvaPaid ? 'PAGO' : 'PENDENTE'}
 🛠️ PARTE MECÂNICA 👇🏻
-✅ MOTOR: 
-✅ CÂMBIO: 
-✅ SUSPENSÃO: 
-🥶 AR GELANDO
+✅ MOTOR: ${selectedVehicle.engine || ''}
+✅ CÂMBIO: ${selectedVehicle.transmissionState || ''}
+✅ SUSPENSÃO: ${selectedVehicle.suspension || ''}
+🥶 AR CONDICIONADO: ${selectedVehicle.airConditioning || ''}
  - - - - - - - - - - - - - - - - - - -
 ✅ OPCIONAIS: ${selectedVehicle.options && selectedVehicle.options.length > 0 ? 'COMPLETO' : 'BÁSICO'}
  

@@ -7,6 +7,7 @@ export const mapToVehicle = (row: any) => ({
     mileage: row.mileage,
     price: row.price,
     oldPrice: row.old_price,
+    fipePrice: row.fipe_price,
     isArmored: row.is_armored,
     images: row.images || (row.image ? [row.image] : []),
     location: row.location,
@@ -36,7 +37,14 @@ export const mapToVehicle = (row: any) => ({
     ipvaPaid: row.ipva_paid,
     ipvaYear: row.ipva_year,
     warranty: row.warranty,
-    warrantyDetails: row.warranty_details
+    warrantyDetails: row.warranty_details,
+    // Campos de Estado/Manutenção
+    tires: row.tires,
+    keys: row.keys,
+    engine: row.engine_state, // Using engine_state to avoid conflict if engine keyword exists, or just to be clear. User just said 'engine'. Let's map to 'engine_state' in DB maybe? Or just 'engine'. Let's stick to user request 'MOTOR' -> 'engine'.
+    transmissionState: row.transmission_state,
+    suspension: row.suspension,
+    airConditioning: row.air_conditioning
 });
 
 export const mapToRow = (vehicle: any) => {
@@ -48,6 +56,7 @@ export const mapToRow = (vehicle: any) => {
         mileage: vehicle.mileage,
         price: vehicle.price,
         old_price: vehicle.oldPrice,
+        fipe_price: vehicle.fipePrice,
         is_armored: vehicle.isArmored,
         images: vehicle.images,
         location: vehicle.location,
@@ -81,6 +90,14 @@ export const mapToRow = (vehicle: any) => {
     if (vehicle.ipvaYear) row.ipva_year = vehicle.ipvaYear;
     if (vehicle.warranty !== undefined) row.warranty = vehicle.warranty;
     if (vehicle.warrantyDetails) row.warranty_details = vehicle.warrantyDetails;
+
+    // Campos de Estado/Manutenção
+    if (vehicle.tires) row.tires = vehicle.tires;
+    if (vehicle.keys) row.keys = vehicle.keys;
+    if (vehicle.engine) row.engine_state = vehicle.engine; // Mapping 'engine' prop to 'engine_state' column to allow 'engine' text
+    if (vehicle.transmissionState) row.transmission_state = vehicle.transmissionState;
+    if (vehicle.suspension) row.suspension = vehicle.suspension;
+    if (vehicle.airConditioning) row.air_conditioning = vehicle.airConditioning;
 
     // Remove undefined keys
     Object.keys(row).forEach(key => row[key] === undefined && delete row[key]);

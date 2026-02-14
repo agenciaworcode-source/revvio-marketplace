@@ -245,7 +245,7 @@ export const Dashboard: React.FC = () => {
                         <CardContent className="space-y-4">
                             <div className="flex items-baseline gap-2">
                                 <span className="text-2xl font-bold text-emerald-600">
-                                    R$ {vehicle.price.toLocaleString('pt-BR')}
+                                    R$ {((!vehicle.belowFipe && (vehicle.fipePrice || 0) > 0 && vehicle.price === 0) ? (vehicle.fipePrice || 0) : vehicle.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
                             <div className="flex gap-2">

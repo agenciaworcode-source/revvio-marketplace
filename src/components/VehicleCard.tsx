@@ -57,13 +57,21 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
                 </div>
 
                 <div className="mt-auto">
-                    {vehicle.oldPrice && (
-                        <p className="text-xs line-through text-[#888] mb-1">DE R$ {formatPrice(vehicle.oldPrice)}</p>
+                    {vehicle.belowFipe && (vehicle.fipePrice || vehicle.oldPrice || 0) > 0 ? (
+                        <>
+                            <p className="text-xs line-through text-[#888] mb-1">
+                                DE R$ {formatPrice(vehicle.fipePrice || vehicle.oldPrice || 0)} (FIPE)
+                            </p>
+                            <p className="text-xl font-extrabold text-[#2ABB9B]">
+                                <span className="text-sm font-semibold">POR </span>
+                                R$ {formatPrice(vehicle.price)}
+                            </p>
+                        </>
+                    ) : (
+                        <p className="text-xl font-extrabold text-[#2ABB9B]">
+                            R$ {formatPrice((!vehicle.belowFipe && (vehicle.fipePrice || 0) > 0 && vehicle.price === 0) ? (vehicle.fipePrice || 0) : vehicle.price)}
+                        </p>
                     )}
-                    <p className="text-xl font-extrabold text-[#2ABB9B]">
-                        {vehicle.oldPrice && <span className="text-sm font-semibold">POR </span>}
-                        R$ {formatPrice(vehicle.price)}
-                    </p>
                 </div>
             </div>
         </div>

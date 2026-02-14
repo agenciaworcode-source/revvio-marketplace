@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useVehicles } from '../context/VehicleContext';
 import { defaultOptions, type Vehicle, carBrands } from '../data';
+import { Wrench } from 'lucide-react';
 import { vehicleService } from '../services/vehicleService';
 import { useFipe } from '../hooks/useFipe';
 
@@ -13,6 +14,7 @@ const emptyVehicle: Omit<Vehicle, 'id'> = {
     mileage: 0,
     price: 0,
     oldPrice: 0,
+    fipePrice: 0,
     isArmored: false,
     images: [],
     status: 'active',
@@ -38,7 +40,7 @@ const emptyVehicle: Omit<Vehicle, 'id'> = {
     belowFipe: false
 };
 
-type Tab = 'general' | 'specs' | 'media' | 'pricing' | 'history' | 'fipe' | 'owner';
+type Tab = 'general' | 'specs' | 'media' | 'pricing' | 'maintenance' | 'history' | 'fipe' | 'owner';
 
 export const VehicleEdit: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -52,6 +54,31 @@ export const VehicleEdit: React.FC = () => {
     const [uploading, setUploading] = useState(false);
     const [ownerSelectionType, setOwnerSelectionType] = useState<'new' | 'existing'>('new');
     const fipe = useFipe();
+
+    // Modificação: Funções auxiliares de formatação
+    const formatCurrency = (value: string | number) => {
+        if (!value) return '';
+        const numberValue = Number(value); // Garante que seja numérico antes
+        if (isNaN(numberValue)) return '';
+        return numberValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    const formatMileage = (value: string | number) => {
+        if (!value) return '';
+        return Number(value).toLocaleString('pt-BR');
+    };
+
+    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value.replace(/\D/g, '');
+        const numericValue = Number(rawValue) / 100;
+        setFormData(prev => ({ ...prev, [e.target.name]: numericValue }));
+    };
+
+    const handleMileageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value.replace(/\D/g, '');
+        const numericValue = Number(rawValue);
+        setFormData(prev => ({ ...prev, [e.target.name]: numericValue }));
+    };
 
     useEffect(() => {
         if (id) {
@@ -217,6 +244,7 @@ export const VehicleEdit: React.FC = () => {
                     <div className={tabClass(activeTab === 'specs')} onClick={() => setActiveTab('specs')}>Especificações</div>
                     <div className={tabClass(activeTab === 'media')} onClick={() => setActiveTab('media')}>Galeria de Mídia</div>
                     <div className={tabClass(activeTab === 'pricing')} onClick={() => setActiveTab('pricing')}>Precificação</div>
+                    <div className={tabClass(activeTab === 'maintenance')} onClick={() => setActiveTab('maintenance')}>Manutenção</div>
                     <div className={tabClass(activeTab === 'history')} onClick={() => setActiveTab('history')}>Procedência</div>
                     <div className={tabClass(activeTab === 'fipe')} onClick={() => setActiveTab('fipe')}>Tabela Fipe</div>
                     <div className={tabClass(activeTab === 'owner')} onClick={() => setActiveTab('owner')}>Dados do Proprietário</div>
@@ -266,7 +294,15 @@ export const VehicleEdit: React.FC = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="space-y-1.5">
                                         <label className={inputLabelClass}>Ano de Fabricação</label>
-                                        <input type="number" name="yearModel" value={formData.yearModel || ''} onChange={handleChange} className={inputFieldClass} />
+                                        <input 
+                                            type="text" 
+                                            name="yearModel" 
+                                            value={formData.yearModel || ''} 
+                                            onChange={handleChange} 
+                                            className={inputFieldClass} 
+                                            placeholder="Ex: 2023 ou 2023/2024"
+                                            maxLength={9}
+                                        />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className={inputLabelClass}>Fabricante</label>
@@ -305,7 +341,14 @@ export const VehicleEdit: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
                                 <div className="space-y-1.5">
                                     <label className={inputLabelClass}>Quilometragem (km)</label>
-                                    <input type="number" name="mileage" value={formData.mileage || 0} onChange={handleChange} className={inputFieldClass} />
+                                    <input 
+                                        type="text" 
+                                        name="mileage" 
+                                        value={formatMileage(formData.mileage || 0)} 
+                                        onChange={handleMileageChange} 
+                                        className={inputFieldClass} 
+                                        placeholder="0"
+                                    />
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className={inputLabelClass}>Cor</label>
@@ -407,15 +450,32 @@ export const VehicleEdit: React.FC = () => {
                                             <span className="text-slate-500 font-bold sm:text-sm">R$</span>
                                         </div>
                                         <input
-                                            type="number"
+                                            type="text"
                                             name="price"
-                                            value={formData.price || 0}
-                                            onChange={handleChange}
+                                            value={formatCurrency(formData.price || 0)}
+                                            onChange={handlePriceChange}
                                             className={`${inputFieldClass} pl-10`}
-                                            step="0.01"
+                                            placeholder="0,00"
                                         />
                                     </div>
                                 </div>
+                                <div className="space-y-1.5">
+                                    <label className={inputLabelClass}>Valor da Tabela Fipe</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span className="text-slate-500 font-bold sm:text-sm">R$</span>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            name="fipePrice"
+                                            value={formatCurrency(formData.fipePrice || 0)}
+                                            onChange={handlePriceChange}
+                                            className={`${inputFieldClass} pl-10`}
+                                            placeholder="0,00"
+                                        />
+                                    </div>
+                                </div>
+
                                 <div className="space-y-1.5 md:col-span-2 pt-4">
                                      <div className="bg-[#e6fffa] p-6 rounded-lg border border-[#2abb9b]/30">
                                          <label className="flex items-center gap-3 cursor-pointer">
@@ -539,6 +599,82 @@ export const VehicleEdit: React.FC = () => {
                         </section>
                     )}
 
+                    {activeTab === 'maintenance' && (
+                        <section>
+                            <h3 className={sectionTitleClass}>Estado e Manutenção</h3>
+                            <p className={sectionDescClass}>Detalhes sobre o estado de conservação e itens mecânicos.</p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                                <div className="space-y-1.5">
+                                    <label className={inputLabelClass}>Pneus</label>
+                                    <input
+                                        type="text"
+                                        name="tires"
+                                        value={formData.tires || ''}
+                                        onChange={handleChange}
+                                        className={inputFieldClass}
+                                        placeholder="Ex: 4 Pneus novos Michelin"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className={inputLabelClass}>Chaves</label>
+                                    <input
+                                        type="text"
+                                        name="keys"
+                                        value={formData.keys || ''}
+                                        onChange={handleChange}
+                                        className={inputFieldClass}
+                                        placeholder="Ex: Possui chave reserva"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className={inputLabelClass}>Motor</label>
+                                    <input
+                                        type="text"
+                                        name="engine"
+                                        value={formData.engine || ''}
+                                        onChange={handleChange}
+                                        className={inputFieldClass}
+                                        placeholder="Ex: Revisado, sem vazamentos"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className={inputLabelClass}>Câmbio</label>
+                                    <input
+                                        type="text"
+                                        name="transmissionState"
+                                        value={formData.transmissionState || ''}
+                                        onChange={handleChange}
+                                        className={inputFieldClass}
+                                        placeholder="Ex: Trocas suaves, óleo trocado"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className={inputLabelClass}>Suspensão</label>
+                                    <input
+                                        type="text"
+                                        name="suspension"
+                                        value={formData.suspension || ''}
+                                        onChange={handleChange}
+                                        className={inputFieldClass}
+                                        placeholder="Ex: Sem barulhos, amortecedores bons"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className={inputLabelClass}>Ar Condicionado</label>
+                                    <input
+                                        type="text"
+                                        name="airConditioning"
+                                        value={formData.airConditioning || ''}
+                                        onChange={handleChange}
+                                        className={inputFieldClass}
+                                        placeholder="Ex: Gelando perfeitamente"
+                                    />
+                                </div>
+                            </div>
+                        </section>
+                    )}
+
                      {activeTab === 'fipe' && (
                         <section>
                              <h3 className={sectionTitleClass}>Consulta Tabela Fipe</h3>
@@ -601,12 +737,12 @@ export const VehicleEdit: React.FC = () => {
                                                         const priceStr = fipe.priceData!.Valor.replace(/[^\d,]/g, '').replace(',', '.');
                                                         setFormData(p => ({
                                                             ...p,
-                                                            price: parseFloat(priceStr),
+                                                            fipePrice: parseFloat(priceStr),
                                                             make: fipe.priceData!.Marca,
                                                             model: fipe.priceData!.Modelo,
                                                             yearModel: fipe.priceData!.AnoModelo.toString()
                                                         }));
-                                                        setActiveTab('general');
+                                                        setActiveTab('pricing');
                                                     }}
                                                     className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-all"
                                                 >
