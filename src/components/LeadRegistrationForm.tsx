@@ -35,32 +35,39 @@ export const LeadRegistrationForm: React.FC = () => {
                 toast.success("Login realizado com sucesso!");
                 // O AuthContext detectará a mudança e atualizará a tela automaticamente
             } else {
-                // Registration Flow
-                // 1. Sign Up
-                const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email: formData.email,
-                    password: formData.senha,
-                    options: {
-                        emailRedirectTo: `${window.location.origin}/dashboard`,
-                        data: {
-                            nome: formData.nome,
-                            contato: formData.contato,
-                            cidade: formData.cidade
-                        }
-                    }
+                // Registration Flow via Backend (Auto-confirm)
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                
+                const response = await fetch(`${apiUrl}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: formData.email,
+                        password: formData.senha,
+                        nome: formData.nome,
+                        contato: formData.contato,
+                        cidade: formData.cidade
+                    })
                 });
 
-                if (authError) throw authError;
+                const data = await response.json();
 
-                if (authData.user) {
-                    // Lead inserted via Database Trigger automatically
-                    toast.success("Cadastro realizado! Aproveite as ofertas.");
-                    navigate('/confirm-email');
-                } else if (authData.session === null) {
-                    // Caso o Supabase exija confirmação de email
-                    toast.info("Verifique seu email para confirmar o cadastro.");
-                    navigate('/confirm-email');
+                if (!response.ok) {
+                    throw new Error(data.message || 'Erro ao criar conta.');
                 }
+
+                // Auto-login after successful registration
+                const { error: loginError } = await supabase.auth.signInWithPassword({
+                    email: formData.email,
+                    password: formData.senha,
+                });
+
+                if (loginError) throw loginError;
+
+                toast.success("Cadastro realizado com sucesso!");
+                navigate('/dashboard'); // or wherever the user should go
             }
         } catch (error: any) {
              console.error(error);
