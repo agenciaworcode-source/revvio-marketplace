@@ -36,9 +36,27 @@ export const LeadRegistrationForm: React.FC = () => {
                 // O AuthContext detectará a mudança e atualizará a tela automaticamente
             } else {
                 // Registration Flow via Backend (Auto-confirm)
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
                 
-                const response = await fetch(`${apiUrl}/api/auth/register`, {
+                // Ensure no trailing slash
+                apiUrl = apiUrl.replace(/\/$/, "");
+
+                // Check if apiUrl already ends with /api, if so, remove it to ensure consistency or leave it and adjust the path?
+                // The issue is that vehicleService uses `http://localhost:3001/api` as default, appending /vehicles.
+                // Here we want /api/auth/register.
+                // If VITE_API_URL includes /api, we should use it carefully.
+                
+                // Let's standardise: if VITE_API_URL ends in /api, we strip it for the auth call if we re-add it, OR we just append /auth/register?
+                // Simplest fix: construct URL relative to the base, ensuring we don't duplicate /api if it's already there.
+
+                // If VITE_API_URL is "https://api.revvio.com.br/api", we want "https://api.revvio.com.br/api/auth/register".
+                // logic: if apiUrl ends with /api, append /auth/register. If not, append /api/auth/register.
+                
+                const endpoint = apiUrl.endsWith('/api') 
+                    ? `${apiUrl}/auth/register` 
+                    : `${apiUrl}/api/auth/register`;
+                
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
