@@ -5,7 +5,7 @@ import { VehicleCard } from '../components/VehicleCard';
 import { useVehicles } from '../context/VehicleContext';
 import { useAuth } from '../context/AuthContext';
 import { LeadRegistrationForm } from '../components/LeadRegistrationForm';
-import { FaChevronRight, FaTag } from 'react-icons/fa';
+import { FaChevronRight, FaTag, FaFilter } from 'react-icons/fa';
 
 
 const initialFilters: FilterState = {
@@ -25,6 +25,18 @@ export const FipeDealsPage: React.FC = () => {
     const { vehicles, loading: vehiclesLoading } = useVehicles();
     const [filters, setFilters] = useState<FilterState>(initialFilters);
     const [sortOrder, setSortOrder] = useState('relevance');
+    const [filtersOpen, setFiltersOpen] = useState(false);
+
+    const activeFilterCount = useMemo(() => {
+        let count = 0;
+        if (filters.search) count++;
+        if (filters.make) count++;
+        if (filters.minPrice || filters.maxPrice) count++;
+        if (filters.minYear || filters.maxYear) count++;
+        if (filters.minMileage || filters.maxMileage) count++;
+        if (filters.isArmored) count++;
+        return count;
+    }, [filters]);
 
     const filteredVehicles = useMemo(() => {
         return vehicles.filter(vehicle => {
@@ -103,15 +115,17 @@ export const FipeDealsPage: React.FC = () => {
         <div className="app">
             <Header />
 
-            <main className="flex flex-col lg:flex-row max-w-7xl mx-auto py-8 px-4 gap-8">
+            <main className="flex flex-col lg:flex-row max-w-7xl mx-auto py-6 px-4 gap-6 relative">
                 <SidebarFilters
                     filters={filters}
                     setFilters={setFilters}
                     onClear={handleClearFilters}
+                    isOpen={filtersOpen}
+                    onClose={() => setFiltersOpen(false)}
                 />
 
                 <section className="flex-1">
-                    <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
                         <span>Home</span>
                         <FaChevronRight size={10} />
                         <span className="font-semibold text-[#2ABB9B] flex items-center">
@@ -120,8 +134,8 @@ export const FipeDealsPage: React.FC = () => {
                         </span>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 bg-[#2abb9b]/10 border border-[#2abb9b]/20 p-4 rounded-lg">
-                        <div className="text-[#2ABB9B] font-bold">
+                    <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3 bg-[#2abb9b]/10 border border-[#2abb9b]/20 p-3 sm:p-4 rounded-lg">
+                        <div className="text-[#2ABB9B] font-bold text-sm">
                             <span>
                                 {filteredVehicles.length} oportunidades encontradas
                             </span>
@@ -130,7 +144,7 @@ export const FipeDealsPage: React.FC = () => {
                             <select
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value)}
-                                className="w-full sm:w-48 p-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 outline-none focus:border-[#2ABB9B] focus:ring-1 focus:ring-[#2ABB9B]"
+                                className="w-full sm:w-44 p-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 outline-none focus:border-[#2ABB9B] focus:ring-1 focus:ring-[#2ABB9B]"
                             >
                                 <option value="relevance">Relevância</option>
                                 <option value="price_asc">Menor Preço</option>
@@ -139,16 +153,16 @@ export const FipeDealsPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {filteredVehicles.length > 0 ? (
                             filteredVehicles.map(vehicle => (
                                 <VehicleCard key={vehicle.id} vehicle={vehicle} />
                             ))
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-20 text-slate-500 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50">
+                            <div className="col-span-full flex flex-col items-center justify-center py-20 text-slate-500 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50">
                                 <p className="text-lg font-medium">Nenhum veículo abaixo da FIPE encontrado</p>
                                 <div className="mt-4">
-                                    <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-md hover:bg-slate-50 font-medium" onClick={handleClearFilters}>
+                                    <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-md hover:bg-slate-50 font-medium text-sm" onClick={handleClearFilters}>
                                         Limpar Filtros
                                     </button>
                                 </div>
@@ -156,8 +170,19 @@ export const FipeDealsPage: React.FC = () => {
                         )}
                     </div>
                 </section>
+
+                {/* Mobile Floating Filter Button */}
+                <button
+                    className="filters-mobile-trigger"
+                    onClick={() => setFiltersOpen(true)}
+                >
+                    <FaFilter className="trigger-icon" />
+                    <span>Filtros</span>
+                    {activeFilterCount > 0 && (
+                        <span className="trigger-badge">{activeFilterCount}</span>
+                    )}
+                </button>
             </main>
         </div>
     );
 };
-
