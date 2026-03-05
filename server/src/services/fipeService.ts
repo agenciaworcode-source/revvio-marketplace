@@ -17,50 +17,50 @@ const setCache = (key: string, data: any) => {
 };
 
 export const fipeService = {
-    async getBrands() {
-        const cacheKey = 'brands';
+    async getBrands(type: string = 'carros') {
+        const cacheKey = `brands-${type}`;
         const cached = getCached(cacheKey);
         if (cached) return cached;
 
-        const response = await fetch(`${FIPE_BASE_URL}/carros/marcas`);
-        if (!response.ok) throw new Error('Falha ao buscar marcas da FIPE');
+        const response = await fetch(`${FIPE_BASE_URL}/${type}/marcas`);
+        if (!response.ok) throw new Error(`Falha ao buscar marcas de ${type} da FIPE`);
 
         const data = await response.json();
         setCache(cacheKey, data);
         return data;
     },
 
-    async getModels(brandCode: string) {
-        const cacheKey = `models-${brandCode}`;
+    async getModels(type: string = 'carros', brandCode: string) {
+        const cacheKey = `models-${type}-${brandCode}`;
         const cached = getCached(cacheKey);
         if (cached) return cached;
 
-        const response = await fetch(`${FIPE_BASE_URL}/carros/marcas/${brandCode}/modelos`);
-        if (!response.ok) throw new Error('Falha ao buscar modelos da FIPE');
+        const response = await fetch(`${FIPE_BASE_URL}/${type}/marcas/${brandCode}/modelos`);
+        if (!response.ok) throw new Error(`Falha ao buscar modelos de ${type} da FIPE`);
 
         const data = await response.json();
         setCache(cacheKey, data);
         return data;
     },
 
-    async getYears(brandCode: string, modelCode: string) {
-        const cacheKey = `years-${brandCode}-${modelCode}`;
+    async getYears(type: string = 'carros', brandCode: string, modelCode: string) {
+        const cacheKey = `years-${type}-${brandCode}-${modelCode}`;
         const cached = getCached(cacheKey);
         if (cached) return cached;
 
-        const response = await fetch(`${FIPE_BASE_URL}/carros/marcas/${brandCode}/modelos/${modelCode}/anos`);
-        if (!response.ok) throw new Error('Falha ao buscar anos da FIPE');
+        const response = await fetch(`${FIPE_BASE_URL}/${type}/marcas/${brandCode}/modelos/${modelCode}/anos`);
+        if (!response.ok) throw new Error(`Falha ao buscar anos de ${type} da FIPE`);
 
         const data = await response.json();
         setCache(cacheKey, data);
         return data;
     },
 
-    async getPrice(brandCode: string, modelCode: string, yearCode: string) {
+    async getPrice(type: string = 'carros', brandCode: string, modelCode: string, yearCode: string) {
         const response = await fetch(
-            `${FIPE_BASE_URL}/carros/marcas/${brandCode}/modelos/${modelCode}/anos/${yearCode}`
+            `${FIPE_BASE_URL}/${type}/marcas/${brandCode}/modelos/${modelCode}/anos/${yearCode}`
         );
-        if (!response.ok) throw new Error('Falha ao buscar preço da FIPE');
+        if (!response.ok) throw new Error(`Falha ao buscar preço de ${type} da FIPE`);
 
         const data = await response.json();
         return data;

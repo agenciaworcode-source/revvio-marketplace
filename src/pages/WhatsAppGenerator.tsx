@@ -114,7 +114,7 @@ export const WhatsAppGenerator: React.FC = () => {
 ✅ SUSPENSÃO: ${selectedVehicle.suspension || ''}
 🥶 AR CONDICIONADO: ${selectedVehicle.airConditioning || ''}
  - - - - - - - - - - - - - - - - - - -
-✅ OPCIONAIS: ${selectedVehicle.options && selectedVehicle.options.length > 0 ? 'COMPLETO' : 'BÁSICO'}
+✅ OPCIONAIS: ${selectedVehicle.options && selectedVehicle.options.length > 0 ? selectedVehicle.options.join(', ') : 'Básico'}
  
 🧰 GASTOS: ${expensesText} (OLHAR FOTOS)
 ▃▃▃▃▃▃▃▃▃▃▃▃▃▃ 

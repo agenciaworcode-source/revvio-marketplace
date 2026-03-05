@@ -4,6 +4,7 @@ import { useVehicles } from '../context/VehicleContext';
 import { defaultOptions, type Vehicle, carBrands } from '../data';
 import { vehicleService } from '../services/vehicleService';
 import { useFipe } from '../hooks/useFipe';
+import { toast } from 'sonner';
 
 const emptyVehicle: Omit<Vehicle, 'id'> = {
     make: '',
@@ -39,7 +40,7 @@ const emptyVehicle: Omit<Vehicle, 'id'> = {
     belowFipe: false
 };
 
-type Tab = 'general' | 'specs' | 'media' | 'pricing' | 'maintenance' | 'history' | 'fipe' | 'owner';
+type Tab = 'general' | 'specs' | 'media' | 'pricing' | 'maintenance' | 'history' | 'owner';
 
 export const VehicleEdit: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -245,7 +246,6 @@ export const VehicleEdit: React.FC = () => {
                     <div className={tabClass(activeTab === 'pricing')} onClick={() => setActiveTab('pricing')}>Precificação</div>
                     <div className={tabClass(activeTab === 'maintenance')} onClick={() => setActiveTab('maintenance')}>Manutenção</div>
                     <div className={tabClass(activeTab === 'history')} onClick={() => setActiveTab('history')}>Procedência</div>
-                    <div className={tabClass(activeTab === 'fipe')} onClick={() => setActiveTab('fipe')}>Tabela Fipe</div>
                     <div className={tabClass(activeTab === 'owner')} onClick={() => setActiveTab('owner')}>Dados do Proprietário</div>
                 </div>
 
@@ -254,6 +254,112 @@ export const VehicleEdit: React.FC = () => {
                     {activeTab === 'general' && (
                         <>
                             <section>
+                                <div className="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h3 className={sectionTitleClass}>Consulta Tabela Fipe</h3>
+                                        <p className={sectionDescClass}>Preencha os dados do veículo automaticamente consultando a FIPE.</p>
+                                    </div>
+                                    <div className="flex bg-slate-100 p-1 rounded-lg">
+                                        <button
+                                            type="button"
+                                            onClick={() => fipe.setVehicleType('carros')}
+                                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${fipe.vehicleType === 'carros' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            CARROS
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => fipe.setVehicleType('motos')}
+                                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${fipe.vehicleType === 'motos' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            MOTOS
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => fipe.setVehicleType('caminhoes')}
+                                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${fipe.vehicleType === 'caminhoes' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            CAMINHÕES
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-6 rounded-xl border border-slate-100 mb-8">
+                                    <div className="space-y-1.5">
+                                        <label className={inputLabelClass}>Marca (Fipe)</label>
+                                        <select
+                                            value={fipe.selectedBrand}
+                                            onChange={(e) => fipe.setSelectedBrand(e.target.value)}
+                                            disabled={fipe.loadingBrands}
+                                            className={inputFieldClass}
+                                        >
+                                            <option value="">{fipe.loadingBrands ? 'Carregando...' : 'Selecione a Marca'}</option>
+                                            {fipe.brands.map(brand => (
+                                                <option key={brand.codigo} value={brand.codigo}>{brand.nome}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className={inputLabelClass}>Modelo (Fipe)</label>
+                                        <select
+                                            value={fipe.selectedModel}
+                                            onChange={(e) => fipe.setSelectedModel(e.target.value)}
+                                            disabled={!fipe.selectedBrand || fipe.loadingModels}
+                                            className={inputFieldClass}
+                                        >
+                                            <option value="">{fipe.loadingModels ? 'Carregando...' : 'Selecione o Modelo'}</option>
+                                            {fipe.models.map(model => (
+                                                <option key={model.codigo} value={model.codigo}>{model.nome}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className={inputLabelClass}>Ano (Fipe)</label>
+                                        <select
+                                            value={fipe.selectedYear}
+                                            onChange={(e) => fipe.setSelectedYear(e.target.value)}
+                                            disabled={!fipe.selectedModel || fipe.loadingYears}
+                                            className={inputFieldClass}
+                                        >
+                                            <option value="">{fipe.loadingYears ? 'Carregando...' : 'Selecione o Ano'}</option>
+                                            {fipe.years.map(year => (
+                                                <option key={year.codigo} value={year.codigo}>{year.nome}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {fipe.priceData && (
+                                        <div className="md:col-span-3 pt-4 border-t border-slate-200 mt-2">
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Valor Encontrado</p>
+                                                    <p className="text-2xl font-black text-[#2ABB9B]">{fipe.priceData.Valor}</p>
+                                                    <p className="text-[10px] text-slate-400 mt-1 font-bold">{fipe.priceData.MesReferencia}</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const priceStr = fipe.priceData!.Valor.replace(/[^\d,]/g, '').replace(',', '.');
+                                                        setFormData(p => ({
+                                                            ...p,
+                                                            fipePrice: parseFloat(priceStr),
+                                                            make: fipe.priceData!.Marca,
+                                                            model: fipe.priceData!.Modelo,
+                                                            yearModel: fipe.priceData!.AnoModelo.toString(),
+                                                            fuel: fipe.priceData!.Combustivel
+                                                        }));
+                                                        toast.success('Dados preenchidos com sucesso!');
+                                                    }}
+                                                    className="px-6 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-all flex items-center gap-2"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                    UTILIZAR ESTES DADOS
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <h3 className={sectionTitleClass}>Detalhes Básicos</h3>
                                 <p className={sectionDescClass}>Identificação primária e status atual.</p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
@@ -674,85 +780,6 @@ export const VehicleEdit: React.FC = () => {
                         </section>
                     )}
 
-                     {activeTab === 'fipe' && (
-                        <section>
-                             <h3 className={sectionTitleClass}>Consulta Tabela Fipe</h3>
-                             <p className={sectionDescClass}>Consulte os valores oficiais de mercado.</p>
-                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-6 rounded-xl border border-slate-100">
-                                    <div className="space-y-1.5">
-                                        <label className={inputLabelClass}>Marca</label>
-                                        <select
-                                            value={fipe.selectedBrand}
-                                            onChange={(e) => fipe.setSelectedBrand(e.target.value)}
-                                            disabled={fipe.loadingBrands}
-                                            className={inputFieldClass}
-                                        >
-                                            <option value="">{fipe.loadingBrands ? 'Carregando...' : 'Selecione a Marca'}</option>
-                                            {fipe.brands.map(brand => (
-                                                <option key={brand.codigo} value={brand.codigo}>{brand.nome}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className={inputLabelClass}>Modelo</label>
-                                        <select
-                                            value={fipe.selectedModel}
-                                            onChange={(e) => fipe.setSelectedModel(e.target.value)}
-                                            disabled={!fipe.selectedBrand || fipe.loadingModels}
-                                            className={inputFieldClass}
-                                        >
-                                            <option value="">{fipe.loadingModels ? 'Carregando...' : 'Selecione o Modelo'}</option>
-                                            {fipe.models.map(model => (
-                                                <option key={model.codigo} value={model.codigo}>{model.nome}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className={inputLabelClass}>Ano</label>
-                                        <select
-                                            value={fipe.selectedYear}
-                                            onChange={(e) => fipe.setSelectedYear(e.target.value)}
-                                            disabled={!fipe.selectedModel || fipe.loadingYears}
-                                            className={inputFieldClass}
-                                        >
-                                            <option value="">{fipe.loadingYears ? 'Carregando...' : 'Selecione o Ano'}</option>
-                                            {fipe.years.map(year => (
-                                                <option key={year.codigo} value={year.codigo}>{year.nome}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {fipe.priceData && (
-                                        <div className="md:col-span-3 pt-4 border-t border-slate-200 mt-2">
-                                            <div className="flex justify-between items-center">
-                                                <div>
-                                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Valor Fipe</p>
-                                                    <p className="text-2xl font-black text-[#2ABB9B]">{fipe.priceData.Valor}</p>
-                                                    <p className="text-xs text-slate-400 mt-1">{fipe.priceData.MesReferencia}</p>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const priceStr = fipe.priceData!.Valor.replace(/[^\d,]/g, '').replace(',', '.');
-                                                        setFormData(p => ({
-                                                            ...p,
-                                                            fipePrice: parseFloat(priceStr),
-                                                            make: fipe.priceData!.Marca,
-                                                            model: fipe.priceData!.Modelo,
-                                                            yearModel: fipe.priceData!.AnoModelo.toString()
-                                                        }));
-                                                        setActiveTab('pricing');
-                                                    }}
-                                                    className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-all"
-                                                >
-                                                    Usar Estes Dados
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                             </div>
-                        </section>
-                     )}
                      
                      {activeTab === 'owner' && (
                         <section>

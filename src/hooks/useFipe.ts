@@ -30,6 +30,7 @@ interface FipePrice {
 }
 
 export const useFipe = () => {
+    const [vehicleType, setVehicleType] = useState<string>('carros');
     const [brands, setBrands] = useState<FipeBrand[]>([]);
     const [models, setModels] = useState<FipeModel[]>([]);
     const [years, setYears] = useState<FipeYear[]>([]);
@@ -44,12 +45,12 @@ export const useFipe = () => {
     const [loadingYears, setLoadingYears] = useState(false);
     const [loadingPrice, setLoadingPrice] = useState(false);
 
-    // Buscar marcas ao montar o componente
+    // Buscar marcas quando o tipo de veículo mudar
     useEffect(() => {
         const fetchBrands = async () => {
             setLoadingBrands(true);
             try {
-                const response = await fetch(`${API_URL}/fipe/brands`);
+                const response = await fetch(`${API_URL}/fipe/brands?type=${vehicleType}`);
                 const data = await response.json();
                 setBrands(data);
             } catch (error) {
@@ -59,7 +60,7 @@ export const useFipe = () => {
             }
         };
         fetchBrands();
-    }, []);
+    }, [vehicleType]);
 
     // Buscar modelos quando a marca for selecionada
     useEffect(() => {
@@ -72,7 +73,7 @@ export const useFipe = () => {
         const fetchModels = async () => {
             setLoadingModels(true);
             try {
-                const response = await fetch(`${API_URL}/fipe/brands/${selectedBrand}/models`);
+                const response = await fetch(`${API_URL}/fipe/brands/${selectedBrand}/models?type=${vehicleType}`);
                 const data = await response.json();
                 setModels(data.modelos || []);
             } catch (error) {
@@ -82,7 +83,7 @@ export const useFipe = () => {
             }
         };
         fetchModels();
-    }, [selectedBrand]);
+    }, [selectedBrand, vehicleType]);
 
     // Buscar anos quando o modelo for selecionado
     useEffect(() => {
@@ -95,7 +96,7 @@ export const useFipe = () => {
         const fetchYears = async () => {
             setLoadingYears(true);
             try {
-                const response = await fetch(`${API_URL}/fipe/brands/${selectedBrand}/models/${selectedModel}/years`);
+                const response = await fetch(`${API_URL}/fipe/brands/${selectedBrand}/models/${selectedModel}/years?type=${vehicleType}`);
                 const data = await response.json();
                 setYears(data);
             } catch (error) {
@@ -105,7 +106,7 @@ export const useFipe = () => {
             }
         };
         fetchYears();
-    }, [selectedBrand, selectedModel]);
+    }, [selectedBrand, selectedModel, vehicleType]);
 
     // Buscar preço quando o ano for selecionado
     useEffect(() => {
@@ -118,7 +119,7 @@ export const useFipe = () => {
             setLoadingPrice(true);
             try {
                 const response = await fetch(
-                    `${API_URL}/fipe/brands/${selectedBrand}/models/${selectedModel}/years/${selectedYear}/price`
+                    `${API_URL}/fipe/brands/${selectedBrand}/models/${selectedModel}/years/${selectedYear}/price?type=${vehicleType}`
                 );
                 const data = await response.json();
                 setPriceData(data);
@@ -129,7 +130,7 @@ export const useFipe = () => {
             }
         };
         fetchPrice();
-    }, [selectedBrand, selectedModel, selectedYear]);
+    }, [selectedBrand, selectedModel, selectedYear, vehicleType]);
 
     const reset = () => {
         setSelectedBrand('');
@@ -141,6 +142,8 @@ export const useFipe = () => {
     };
 
     return {
+        vehicleType,
+        setVehicleType,
         brands,
         models,
         years,
