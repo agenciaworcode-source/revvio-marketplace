@@ -45,25 +45,24 @@ export const vehicleService = {
     },
 
     async uploadImages(files: File[]): Promise<string[]> {
-        // Mantemos upload direto no Supabase Storage via FE por simplicidade no momento
-        const uploadPromises = files.map(async (file) => {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${fileName}`;
-            const { error: uploadError } = await supabase.storage
-                .from('vehicles')
-                .upload(filePath, file);
+        const { data: { session } } = await supabase.auth.getSession();
+        const formData = new FormData();
+        files.forEach(file => formData.append('images', file));
 
-            if (uploadError) throw uploadError;
-
-            const { data } = supabase.storage
-                .from('vehicles')
-                .getPublicUrl(filePath);
-
-            return data.publicUrl;
+        const response = await fetch(`${API_URL}/upload`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${session?.access_token}`
+            },
+            body: formData
         });
 
-        return Promise.all(uploadPromises);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Erro ao fazer upload das imagens');
+        }
+
+        return response.json();
     },
 
     async delete(id: number | string): Promise<void> {

@@ -9,6 +9,7 @@ import ownerRoutes from './routes/ownerRoutes.js';
 import leadRoutes from './routes/leadRoutes.js';
 import fipeRoutes from './routes/fipeRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use('/api/owners', ownerRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/fipe', fipeRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/health', async (req, res) => {

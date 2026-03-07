@@ -30,6 +30,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
                     src={vehicle.images?.[0] || 'https://via.placeholder.com/300'} 
                     alt={`${vehicle.make} ${vehicle.model}`} 
                     className="w-full h-full object-cover transition-transform duration-[800ms] group-hover:scale-105" 
+                    loading="lazy"
+                    decoding="async"
                 />
                 {vehicle.isArmored && (
                     <div className="absolute bottom-0 left-0 right-0 bg-[#E74C3C] text-white flex justify-center items-center gap-1.5 p-1.5 text-xs font-semibold uppercase">

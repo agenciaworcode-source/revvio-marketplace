@@ -166,6 +166,8 @@ export const VehicleDetails: React.FC = () => {
                         src={img}
                         alt={`${vehicle.model} - ${imgIndex + 1}`}
                         className="w-full h-full object-cover object-center cursor-pointer"
+                        loading="lazy"
+                        decoding="async"
                     />
                     {vehicle.isArmored && (
                         <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 bg-[#2ABB9B] text-white px-3 py-1 rounded font-bold text-xs flex items-center gap-1.5 shadow-md">
