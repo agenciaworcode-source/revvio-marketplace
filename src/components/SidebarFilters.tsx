@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaFilter, FaSearch, FaCarSide, FaDollarSign, FaCalendarAlt, FaTachometerAlt, FaShieldAlt, FaChevronDown, FaTimes } from 'react-icons/fa';
+import { FaFilter, FaSearch, FaCarSide, FaDollarSign, FaCalendarAlt, FaTachometerAlt, FaShieldAlt, FaChevronDown, FaTimes, FaTag } from 'react-icons/fa';
 import { carBrands } from '../data';
 import './SidebarFilters.css';
 
@@ -13,6 +13,7 @@ export interface FilterState {
     minMileage: string;
     maxMileage: string;
     isArmored: boolean;
+    belowFipe: boolean;
 }
 
 interface SidebarFiltersProps {
@@ -32,7 +33,8 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({ filters, setFilt
         price: true,
         year: false,
         mileage: false,
-        armored: false
+        armored: false,
+        belowFipe: true
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -57,6 +59,7 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({ filters, setFilt
         if (filters.minYear || filters.maxYear) count++;
         if (filters.minMileage || filters.maxMileage) count++;
         if (filters.isArmored) count++;
+        if (filters.belowFipe) count++;
         return count;
     }, [filters]);
 
@@ -82,6 +85,28 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({ filters, setFilt
 
     const filterContent = (
         <>
+            {/* Below Fipe Highlight Section */}
+            <div className="filter-section below-fipe-highlight">
+                <div className="filter-section-header" onClick={() => toggleSection('belowFipe')}>
+                    <label style={{ color: '#fff' }}><FaTag className="section-icon" style={{ color: '#fff' }} /> Abaixo da Fipe</label>
+                    <FaChevronDown className={`filter-section-chevron ${openSections.belowFipe ? 'open' : ''}`} style={{ color: '#fff' }} />
+                </div>
+                <div className={`filter-section-body ${openSections.belowFipe ? 'open' : ''}`}>
+                    <div className="toggle-group" style={{ padding: '8px 0' }}>
+                        <span style={{ fontSize: '13px', color: '#fff', fontWeight: 600 }}>Apenas ofertas especiais</span>
+                        <label className="switch">
+                            <input
+                                name="belowFipe"
+                                type="checkbox"
+                                checked={filters.belowFipe}
+                                onChange={handleChange}
+                            />
+                            <span className="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             {/* Search Section */}
             <div className="filter-section">
                 <div className="filter-section-header" onClick={() => toggleSection('search')}>

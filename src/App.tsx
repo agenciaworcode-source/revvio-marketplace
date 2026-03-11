@@ -6,7 +6,6 @@ import { VehicleEdit } from './pages/VehicleEdit';
 import { Owners } from './pages/Owners';
 import { Login } from './pages/Login';
 import { TestLP } from './pages/TestLP';
-import { FipeDealsPage } from './pages/FipeDealsPage';
 import { LeadsPage } from './pages/LeadsPage';
 import { WhatsAppGenerator } from './pages/WhatsAppGenerator';
 import { VehicleProvider } from './context/VehicleContext';
@@ -22,7 +21,6 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/carros-baratos" element={<FipeDealsPage />} />
             <Route path="/vehicle/:id" element={<VehicleDetails />} />
             <Route path="/controle" element={<Login />} />
             <Route path="/test-lp" element={<TestLP />} />

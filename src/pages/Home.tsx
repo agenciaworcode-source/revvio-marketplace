@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+
 import { Header } from '../components/Header';
 import { SidebarFilters, type FilterState } from '../components/SidebarFilters';
 import { VehicleCard } from '../components/VehicleCard';
 import { useVehicles } from '../context/VehicleContext';
+import { useAuth } from '../context/AuthContext';
+import { LeadRegistrationForm } from '../components/LeadRegistrationForm';
 import { FaChevronRight, FaFilter } from 'react-icons/fa';
 
 
@@ -16,11 +18,13 @@ const initialFilters: FilterState = {
     maxYear: '',
     minMileage: '',
     maxMileage: '',
-    isArmored: false
+    isArmored: false,
+    belowFipe: false
 };
 
 export const Home: React.FC = () => {
     const { vehicles, loading } = useVehicles();
+    const { user, loading: authLoading } = useAuth();
     const [filters, setFilters] = useState<FilterState>(initialFilters);
     const [sortOrder, setSortOrder] = useState('relevance');
     const [filtersOpen, setFiltersOpen] = useState(false);
@@ -38,9 +42,9 @@ export const Home: React.FC = () => {
 
     const filteredVehicles = useMemo(() => {
         return vehicles.filter(vehicle => {
-            // 1. Basic Status Filter (Hide sold, pending AND below_fipe)
+            // 1. Basic Status Filter (Hide sold and pending)
             if (vehicle.status === 'sold' || vehicle.status === 'pending') return false;
-            if (vehicle.belowFipe) return false; // Hide Below Fipe deals from main home
+            if (filters.belowFipe && !vehicle.belowFipe) return false;
 
             // 2. Search (Model, Version, Description)
             if (filters.search) {
@@ -85,7 +89,7 @@ export const Home: React.FC = () => {
         setFilters(initialFilters);
     };
 
-    if (loading) {
+    if (authLoading || (user && loading)) {
         return (
             <div className="app">
                 <Header />
@@ -96,22 +100,22 @@ export const Home: React.FC = () => {
         );
     }
 
+    if (!user) {
+        return (
+            <div className="app">
+                <Header />
+                <main className="bg-slate-50 min-h-screen py-8">
+                     <LeadRegistrationForm />
+                </main>
+            </div>
+        );
+    }
+
     return (
         <div className="app">
             <Header />
 
             <main className="flex flex-col lg:flex-row max-w-7xl mx-auto py-6 px-4 gap-6 relative">
-                {/* Promo Tooltip */}
-                {!loading && (
-                    <div className="absolute top-0 right-4 lg:right-0 transform -translate-y-full mt-[-10px] z-50 animate-bounce cursor-pointer group hidden md:block">
-                        <Link to="/carros-baratos" className="no-underline">
-                            <div className="bg-[#2ABB9B] text-white px-4 py-2 rounded-lg shadow-lg relative font-bold text-sm">
-                                🚀 Cadastre-se agora para ver ofertas abaixo da FIPE!
-                                <div className="absolute bottom-[-6px] right-8 w-3 h-3 bg-[#2ABB9B] transform rotate-45"></div>
-                            </div>
-                        </Link>
-                    </div>
-                )}
 
                 <SidebarFilters
                     filters={filters}

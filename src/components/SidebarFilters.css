@@ -135,6 +135,18 @@
     padding: 4px 12px 14px 12px;
 }
 
+/* --- Below Fipe Highlight Custom Style --- */
+.below-fipe-highlight {
+    background: linear-gradient(135deg, #2ABB9B 0%, #1a8f75 100%);
+    box-shadow: 0 4px 12px rgba(42, 187, 155, 0.3);
+    margin-bottom: 12px;
+    margin-top: -6px;
+}
+
+.below-fipe-highlight .filter-section-header:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
 /* --- Inputs Modernos --- */
 .input-field,
 .select-field {

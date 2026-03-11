@@ -18,23 +18,13 @@ export const Header: React.FC = () => {
                     {user && !window.location.pathname.startsWith('/dashboard') && (
                         <button 
                             onClick={signOut}
-                            className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                            className="text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer bg-red-500 px-2 py-1 rounded-md"
                         >
                             Sair
                         </button>
                     )}
 
-                    {!window.location.pathname.startsWith('/dashboard') && (
-                        window.location.pathname === '/carros-baratos' ? (
-                            <Link to="/" className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded font-bold text-sm transition-colors no-underline">
-                                🏠 Voltar para o Início
-                            </Link>
-                        ) : (
-                            <Link to="/carros-baratos" className="px-4 py-2 bg-[#2ABB9B] hover:bg-[#24a085] text-white rounded font-bold text-sm transition-colors no-underline">
-                                🔥 Abaixo da FIPE
-                            </Link>
-                        )
-                    )}
+
                     {window.location.pathname.startsWith('/dashboard') && (
                         <span className="font-bold text-base text-white">Gestão de Veículos</span>
                     )}
