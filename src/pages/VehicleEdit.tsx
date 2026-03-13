@@ -143,7 +143,15 @@ export const VehicleEdit: React.FC = () => {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setImageFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+            const newFiles = Array.from(e.target.files);
+            const totalFiles = imageFiles.length + (formData.images?.length || 0) + newFiles.length;
+            
+            if (totalFiles > 20) {
+                toast.error('O limite máximo é de 20 imagens por veículo.');
+                return;
+            }
+            
+            setImageFiles(prev => [...prev, ...newFiles]);
         }
     };
 
