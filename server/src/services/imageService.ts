@@ -10,6 +10,7 @@ export const imageService = {
 
         // Process image with Sharp
         const optimizedBuffer = await sharp(file.buffer)
+            .rotate()
             .resize(1200, 1200, {
                 fit: 'inside',
                 withoutEnlargement: true
@@ -44,6 +45,7 @@ export const imageService = {
         const filePath = `vehicles/${fileName}`;
 
         const thumbnailBuffer = await sharp(file.buffer)
+            .rotate()
             .resize(400, 400, {
                 fit: 'cover'
             })

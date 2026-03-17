@@ -215,7 +215,7 @@ export const VehicleEdit: React.FC = () => {
 
     return (
         <div className="flex-1 flex flex-col bg-white h-full overflow-y-auto">
-            <div className="px-10 py-10 max-w-5xl mx-auto w-full">
+            <div className="px-4 sm:px-6 lg:px-10 py-6 sm:py-10 max-w-5xl mx-auto w-full">
                 {/* Breadcrumbs */}
                 <nav className="flex items-center gap-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
                     <span className="hover:text-[#2ABB9B] transition-colors cursor-pointer" onClick={() => navigate('/dashboard')}>Inventário</span>
@@ -224,22 +224,22 @@ export const VehicleEdit: React.FC = () => {
                 </nav>
 
                 {/* Header */}
-                <div className="flex justify-between items-start mb-10">
-                    <div>
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-10">
+                    <div className="w-full">
                         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">{isEdit ? 'Editar Detalhes do Veículo' : 'Adicionar Novo Veículo'}</h2>
                         <p className="text-slate-500 text-sm mt-1 font-medium">Gerencie informações gerais e de categorização para esta unidade.</p>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 w-full sm:w-auto">
                         <button
                             onClick={() => navigate('/dashboard')}
-                            className="px-5 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-lg transition-all"
+                            className="flex-1 sm:flex-none px-5 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-lg transition-all"
                         >
                             Cancelar
                         </button>
                         <button
                             onClick={handleSubmit}
                             disabled={uploading}
-                            className="px-6 py-2 bg-[#2ABB9B] text-white text-sm font-bold rounded-lg hover:bg-[#25A086] transition-all shadow-sm disabled:opacity-50"
+                            className="flex-1 sm:flex-none px-6 py-2 bg-[#2ABB9B] text-white text-sm font-bold rounded-lg hover:bg-[#25A086] transition-all shadow-sm disabled:opacity-50"
                         >
                             {uploading ? 'Salvando...' : 'Salvar Alterações'}
                         </button>
@@ -247,14 +247,16 @@ export const VehicleEdit: React.FC = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="mb-10 flex border-b border-slate-100 overflow-x-auto">
-                    <div className={tabClass(activeTab === 'general')} onClick={() => setActiveTab('general')}>Informações Gerais</div>
-                    <div className={tabClass(activeTab === 'specs')} onClick={() => setActiveTab('specs')}>Especificações</div>
-                    <div className={tabClass(activeTab === 'media')} onClick={() => setActiveTab('media')}>Galeria de Mídia</div>
-                    <div className={tabClass(activeTab === 'pricing')} onClick={() => setActiveTab('pricing')}>Precificação</div>
-                    <div className={tabClass(activeTab === 'maintenance')} onClick={() => setActiveTab('maintenance')}>Manutenção</div>
-                    <div className={tabClass(activeTab === 'history')} onClick={() => setActiveTab('history')}>Procedência</div>
-                    <div className={tabClass(activeTab === 'owner')} onClick={() => setActiveTab('owner')}>Dados do Proprietário</div>
+                <div className="mb-10 flex border-b border-slate-100 overflow-x-auto scrollbar-hide -mx-4 sm:mx-0 px-4 sm:px-0">
+                    <div className="flex min-w-max">
+                        <div className={tabClass(activeTab === 'general')} onClick={() => setActiveTab('general')}>Geral</div>
+                        <div className={tabClass(activeTab === 'specs')} onClick={() => setActiveTab('specs')}>Especificações</div>
+                        <div className={tabClass(activeTab === 'media')} onClick={() => setActiveTab('media')}>Galeria</div>
+                        <div className={tabClass(activeTab === 'pricing')} onClick={() => setActiveTab('pricing')}>Preço</div>
+                        <div className={tabClass(activeTab === 'maintenance')} onClick={() => setActiveTab('maintenance')}>Manutenção</div>
+                        <div className={tabClass(activeTab === 'history')} onClick={() => setActiveTab('history')}>Procedência</div>
+                        <div className={tabClass(activeTab === 'owner')} onClick={() => setActiveTab('owner')}>Proprietário</div>
+                    </div>
                 </div>
 
                 {/* Content */}
@@ -513,10 +515,10 @@ export const VehicleEdit: React.FC = () => {
                              <p className={sectionDescClass}>Gerencie fotos e vídeos do veículo.</p>
 
                              <div className="space-y-6">
-                                <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-10 text-center">
-                                    <p className="text-sm text-slate-500 font-medium mb-4">Arraste e solte suas imagens aqui, ou clique para navegar.</p>
+                                <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-6 sm:p-10 text-center">
+                                    <p className="text-sm text-slate-500 font-medium mb-4 px-2">Arraste e solte suas imagens aqui, ou clique para navegar.</p>
                                     <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" id="file-upload" />
-                                    <label htmlFor="file-upload" className="px-6 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-sm rounded-lg cursor-pointer hover:bg-slate-50 shadow-sm transition-all">
+                                    <label htmlFor="file-upload" className="inline-block px-6 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-sm rounded-lg cursor-pointer hover:bg-slate-50 shadow-sm transition-all">
                                         Selecionar Arquivos
                                     </label>
                                 </div>

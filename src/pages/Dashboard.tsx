@@ -94,25 +94,27 @@ export const Dashboard: React.FC = () => {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Gestão de Veículos</h1>
-                    <p className="text-muted-foreground mt-1">Gerencie seu inventário de veículos</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Gestão de Veículos</h1>
+                    <p className="text-muted-foreground mt-1 text-sm sm:text-base">Gerencie seu inventário de veículos</p>
                 </div>
-                <div className="flex gap-2">
-                    <Button onClick={handleExportCSV} variant="outline" className="gap-2">
+                <div className="flex gap-2 w-full sm:w-auto">
+                    <Button onClick={handleExportCSV} variant="outline" className="flex-1 sm:flex-none gap-2">
                         <Download className="w-4 h-4" />
-                        Exportar CSV
+                        <span className="hidden xs:inline">Exportar CSV</span>
+                        <span className="xs:hidden">Exportar</span>
                     </Button>
-                    <Button onClick={handleCreate} className="gap-2">
+                    <Button onClick={handleCreate} className="flex-1 sm:flex-none gap-2 bg-emerald-600 hover:bg-emerald-700">
                         <Plus className="w-4 h-4" />
-                        Novo Veículo
+                        <span className="hidden xs:inline">Novo Veículo</span>
+                        <span className="xs:hidden">Novo</span>
                     </Button>
                 </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-5">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total de Veículos</CardTitle>
@@ -202,7 +204,7 @@ export const Dashboard: React.FC = () => {
             </Card>
 
             {/* Vehicles Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredVehicles.map(vehicle => (
                     <Card key={vehicle.id} className="overflow-hidden group hover:shadow-lg transition-shadow">
                         <div className="aspect-[16/9] relative overflow-hidden bg-slate-100">

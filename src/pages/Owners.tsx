@@ -125,7 +125,7 @@ export const Owners: React.FC = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total de Proprietários</CardTitle>
@@ -177,23 +177,23 @@ export const Owners: React.FC = () => {
                             {owners.map(owner => (
                                 <div
                                     key={owner.id}
-                                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors gap-4"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <Avatar className="h-12 w-12">
+                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 shrink-0">
                                             <AvatarFallback className="bg-emerald-500 text-white font-semibold">
                                                 {owner.name.charAt(0).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
-                                        <div>
-                                            <h3 className="font-semibold">{owner.name}</h3>
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm text-muted-foreground mt-1">
+                                        <div className="min-w-0">
+                                            <h3 className="font-semibold truncate">{owner.name}</h3>
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground mt-1">
                                                 <span className="flex items-center gap-1">
                                                     <Phone className="w-3 h-3" />
                                                     {owner.phone}
                                                 </span>
                                                 {owner.email !== 'N/A' && (
-                                                    <span className="flex items-center gap-1">
+                                                    <span className="flex items-center gap-1 truncate">
                                                         <Mail className="w-3 h-3" />
                                                         {owner.email}
                                                     </span>
@@ -201,8 +201,8 @@ export const Owners: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-right hidden lg:block mr-4">
+                                    <div className="flex items-center gap-2 justify-end sm:justify-start">
+                                        <div className="text-right hidden xl:block mr-4">
                                             <div className="text-sm font-medium">{owner.vehicles.length} veículo(s)</div>
                                             <div className="text-xs text-muted-foreground">vinculado(s)</div>
                                         </div>
@@ -213,7 +213,7 @@ export const Owners: React.FC = () => {
                                                 setSelectedOwner(owner);
                                                 setIsEditing(false);
                                             }}
-                                            className="gap-2"
+                                            className="h-8 px-2 sm:px-3 gap-1 sm:gap-2"
                                             title="Ver Detalhes"
                                         >
                                             <Eye className="w-4 h-4" />
@@ -223,7 +223,7 @@ export const Owners: React.FC = () => {
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleEditClick(owner)}
-                                            className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                            className="h-8 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                             title="Editar"
                                         >
                                             <Edit className="w-4 h-4" />
@@ -232,7 +232,7 @@ export const Owners: React.FC = () => {
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleDeleteClick(owner)}
-                                            className="gap-2 text-destructive hover:text-destructive hover:bg-red-50"
+                                            className="h-8 px-2 text-destructive hover:text-destructive hover:bg-red-50"
                                             title="Excluir"
                                         >
                                             <Trash2 className="w-4 h-4" />
